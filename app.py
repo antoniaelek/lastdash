@@ -5,11 +5,11 @@ import dash_html_components as html
 from plots.tags import top_tags_plot
 from plots.artists import top_artists_plot
 
-top_tags_data, top_tags_layout = top_tags_plot()
-top_artists_data, top_artists_layout = top_artists_plot()
+colors = ['#d7191c', '#2b83ba', '#ffffbf', '#fdae61', '#abdda4']
+external_stylesheets = ['https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css']
 
-external_stylesheets = [#'https://codepen.io/chriddyp/pen/bWLwgP.css',
-                        'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css']
+top_tags_data, top_tags_layout = top_tags_plot(color=colors[0])
+top_artists_data, top_artists_layout = top_artists_plot(color=colors[1])
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 

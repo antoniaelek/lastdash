@@ -10,13 +10,17 @@ def _get_top_tags_for_plot(tags, top_n=8):
     return top_tags
 
 
-def top_tags_plot(filename='csv/tags.csv', top_n=8):
+def top_tags_plot(filename='csv/tags.csv', top_n=8, color=None):
     tags = get_tags(filename=filename)
+    line = {}
+    if color is not None:
+        line['color'] = color
     top_tags = _get_top_tags_for_plot(tags=tags, top_n=top_n)
     data = go.Scatterpolar(
       r=top_tags['Count'],
       theta=top_tags['Name'],
-      fill='toself'
+      fill='toself',
+      line=line
     )
     layout = go.Layout(
         title='Top Tags',
