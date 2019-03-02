@@ -20,7 +20,9 @@ def top_tags_plot(filename='csv/tags.csv', top_n=8, color=None, title_size=28):
       r=top_tags['Count'],
       theta='<a style="color:inherit" href="' + top_tags['URL'] + '">' + top_tags['Name'] + '</a>',
       fill='toself',
-      line=line
+      line=line,
+      hovertext=top_tags['Count'],
+      hoverinfo='text'
     )
     layout = go.Layout(
         title='Top Tags',
