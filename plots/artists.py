@@ -35,4 +35,4 @@ def top_artists_plot(filename='csv/artists.csv', top_n=8, color=None, title_size
         ),
         showlegend=False
     )
-    return data, layout
+    return [data], layout
