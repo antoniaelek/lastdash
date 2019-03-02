@@ -10,7 +10,7 @@ def _get_top_artists_for_plot(artists, top_n=8):
     return top_artists
 
 
-def top_artists_plot(filename='csv/artists.csv', top_n=8, color=None):
+def top_artists_plot(filename='csv/artists.csv', top_n=8, color=None, title_size=28):
     artists = get_artists(filename=filename)
     top_artists = _get_top_artists_for_plot(artists=artists, top_n=top_n)
     line = {}
@@ -18,13 +18,13 @@ def top_artists_plot(filename='csv/artists.csv', top_n=8, color=None):
         line['color'] = color
     data = go.Scatterpolar(
       r=top_artists['Count'],
-      theta=top_artists['Name'],
+      theta='<a style="color:inherit" href="' + top_artists['URL'] + '">' + top_artists['Name'] + '</a>',
       fill='toself',
       line=line
     )
     layout = go.Layout(
         title='Top artists',
-        titlefont=dict(size=24),
+        titlefont=dict(size=title_size),
         polar=dict(
             radialaxis=dict(
                 visible=False,
