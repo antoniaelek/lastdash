@@ -21,7 +21,7 @@ def top_artists_plot(filename='csv/artists.csv', top_n=8, color=None, title_size
       theta='<a style="color:inherit" href="' + top_artists['URL'] + '">' + top_artists['Name'] + '</a>',
       fill='toself',
       line=line,
-      hovertext=top_artists['Count'],
+      hovertext=top_artists['PercentPretty'] + ' of all played artists',
       hoverinfo='text'
     )
     layout = go.Layout(
