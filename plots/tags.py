@@ -10,7 +10,7 @@ def _get_top_tags_for_plot(tags, top_n=8):
     return top_tags
 
 
-def top_tags_plot(filename='csv/tags.csv', top_n=8, color=None, title_size=28):
+def top_tags_plot(filename='csv/tags.csv', top_n=8, color=None, title_size=36):
     tags = get_tags(filename=filename)
     line = {}
     if color is not None:

@@ -10,7 +10,7 @@ def _get_top_artists_for_plot(artists, top_n=8):
     return top_artists
 
 
-def top_artists_plot(filename='csv/artists.csv', top_n=8, color=None, title_size=28):
+def top_artists_plot(filename='csv/artists.csv', top_n=8, color=None, title_size=36):
     artists = get_artists(filename=filename)
     top_artists = _get_top_artists_for_plot(artists=artists, top_n=top_n)
     line = {}
