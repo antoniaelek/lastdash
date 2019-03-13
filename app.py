@@ -2,6 +2,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_bootstrap_components as dbc
 
 from data.scrobbles import get_scrobbles
 from data.artists import get_artists
@@ -15,32 +16,37 @@ from plots.artists import top_artists_plot
 
 
 def top_artist_div(title, data, id, align_left=True):
-    div_img = html.Div(className='col-lg-6')
-    div_text_large = html.Div(className='col-lg-6 d-md-none', children=[
-        html.H1(title),
-        html.H2("no scrobbles", className="box-title box-title-lg")
+    img_class = 'col-lg-6 col-md-12 justify-content-lg-end justify-content-center d-flex'  # right-tab behind'
+    div_text_large_class = 'd-none d-lg-block col-lg-6 justify-content-lg-end text-left'  # left-tab in-front'
+    if align_left is False:
+        img_class = 'col-lg-6 col-md-12 justify-content-lg-start justify-content-center d-flex'  # left-tab behind'
+        div_text_large_class = 'd-none d-lg-block col-lg-6 justify-content-lg-start text-right'  # right-tab in-front'
+
+    div_img = html.Div(className=img_class)
+    div_text_large = html.Div(className=div_text_large_class, children=[
+        html.H4(title),
+        html.H2("no scrobbles")
     ])
     div_text_small = html.Div(className='d-xl-none col-md-12', children=[
-        html.H2("no scrobbles", className="box-title")
+        html.H3("no scrobbles", className="box-title")
     ])
-    div_title_small = html.Div(className='d-xl-none col-md-12', children=[
-        html.H1(title)
+    div_title_small = html.Div(className='d-lg-none col-md-12 pad', children=[
+        html.H3(title)
     ])
 
     if len(data) > 0:
-        div_img = html.Div(className='col-xl-6', children=[
+        div_img = html.Div(className=img_class, children=[
             html.Img(className='gridbox', src=data.at[data.index[-1], 'ImageURL'].replace('300x300', '450x450'))
         ])
-        div_text_large = html.Div(className='d-none d-xl-block col-xl-6', children=[
-            html.H1(title),
-            html.H2(data.index[-1], className="box-title box-title-lg"),
-            html.H4('{} plays'.format(data.at[data.index[-1], 'PlayCount']),
-                    className="box-subtitle box-subtitle-lg")
+
+        div_text_large = html.Div(className=div_text_large_class, children=[
+            html.H4(title, className='textbox'),
+            html.H2(data.index[-1], className=''),
+            html.H4('{} plays'.format(data.at[data.index[-1], 'PlayCount']), className="")
         ])
-        div_text_small = html.Div(className='d-xl-none col-md-12', children=[
-            html.H2(data.index[-1], className="box-title"),
-            html.H4('{} plays'.format(data.at[data.index[-1], 'PlayCount']),
-                    className="box-subtitle")
+        div_text_small = html.Div(className='d-lg-none col-md-12 pad-bottom', children=[
+            html.H3(data.index[-1], className=''),
+            html.H4('{} plays'.format(data.at[data.index[-1], 'PlayCount']), className="")
         ])
 
     if align_left:
@@ -61,7 +67,8 @@ def top_artist_div(title, data, id, align_left=True):
 
 colors = ['#d7191c', '#2b83ba', '#abdda4', '#fdae61', '#ffff44']
 external_stylesheets = ['https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css',
-                        '/static/custom.css']
+                        '/static/custom.css',
+                        'dbc.themes.BOOTSTRAP']
 
 print("Fetching scrobbles...")
 scrobbles = get_scrobbles()
@@ -88,20 +95,42 @@ work_div = top_artist_div("At Work", top_at_work, "top-work")
 weekends_div = top_artist_div("On Weekends", top_weekends, "top-weekends", align_left=False)
 late_night_div = top_artist_div("Late At Night", top_late_night, "top-late-night")
 
+navbar = dbc.NavbarSimple(
+    children=[
+        dbc.NavItem(dbc.NavLink("Last Dash", href="#")),
+        dbc.DropdownMenu(
+            nav=True,
+            in_navbar=True,
+            label="Menu",
+            children=[
+                dbc.DropdownMenuItem("Entry 1"),
+                dbc.DropdownMenuItem("Entry 2"),
+                dbc.DropdownMenuItem(divider=True),
+                dbc.DropdownMenuItem("Entry 3"),
+            ],
+        ),
+    ],
+    brand="Demo",
+    brand_href="#",
+    sticky="top",
+)
+
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div(className='text-center', children=[
     # Title
-    html.Div(className='row', children=[
-        html.Div(className='col-md-12', children=[
-            html.H1('Last Dash', className="")
-        ])
-    ]),
+    navbar,
+
+    # html.Div(className='row', children=[
+    #     html.Div(className='col-md-12', children=[
+    #         html.H1('Last Dash', className="")
+    #     ])
+    # ]),
 
     # Top artist at work, on weekends and late at night
     html.Div(className='row', children=[
         html.Div(className='col-md-12', children=[
-            html.H2('Your top artists', className="display-3")
+            html.H1('Your top artists', className='')
         ])
     ]),
     work_div,
