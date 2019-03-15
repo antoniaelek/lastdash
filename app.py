@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -7,6 +8,8 @@ from dash.dependencies import Input, Output
 
 from data.scrobbles import get_scrobbles
 from data.artists import get_artists
+
+import pandas as pd
 
 from plots.plays_by_artist import get_artists_plays_at_work_plot, get_artists_plays_data
 from plots.plays_by_artist import get_artists_plays_at_work_data
@@ -79,6 +82,16 @@ scrobbles = get_scrobbles()
 print("Fetching artists...")
 artists = get_artists()
 
+today = datetime.date.today()
+min_date = scrobbles.index.min()[0]
+max_date = today
+periods = list(range(min_date.year,max_date.year))
+periods += ['This year', 'This month', 'This week']
+periods.reverse()
+
+week_start = today - datetime.timedelta(days=7)
+month_start = today - datetime.timedelta(days=today.day-1)
+
 # print("Fetching top tags...")
 # top_tags_trace, top_tags_layout = top_tags_plot(color=colors[0])
 #
@@ -88,25 +101,14 @@ artists = get_artists()
 
 navbar = dbc.NavbarSimple(
     children=[
-        # dbc.NavItem(dbc.NavLink("Top Artists", href="#")),
+        #dbc.NavItem(dbc.NavLink("Top Artists", href="#")),
         dcc.Dropdown(
             id='year-input',
-            options=[{'label': str(i), 'value': str(i)} for i in scrobbles['Year'].unique()],
-            value='2019',
+            options=[{'label': str(i), 'value': str(i)} for i in periods],
+            value='This week',
             clearable=False,
             style={'bgcolor':'#f8f9fa','bordercolor':'#f8f9fa'}
-        ),
-
-        # dbc.DropdownMenu(
-        #    nav=True,
-        #    in_navbar=True,
-        #    label="Year",
-        #    children=[
-        #        dbc.DropdownMenuItem("Entry 1"),
-        #        dbc.DropdownMenuItem("Entry 2"),
-        #        dbc.DropdownMenuItem("Entry 3"),
-        #    ],
-        #  ),
+        )
     ],
     brand="Last Dash",
     brand_href="#",
@@ -133,21 +135,28 @@ app.layout = html.Div(className='text-center', children=[
     [Input(component_id='year-input', component_property='value')]
 )
 def update_output_div(input_value):
-    scrobbles_selected = scrobbles[scrobbles['Year'] == int(input_value)]
+    if input_value == 'This week':
+        scrobbles_selected = scrobbles[scrobbles['Timestamp'] >= pd.Timestamp(week_start)]
+    elif input_value == 'This month':
+        scrobbles_selected = scrobbles[scrobbles['Timestamp'] >= pd.Timestamp(month_start)]
+    elif input_value == 'This year':
+        scrobbles_selected = scrobbles[scrobbles['Year'] == int(today.year)]
+    else:
+        scrobbles_selected = scrobbles[scrobbles['Year'] == int(input_value)]
 
-    print("Fetching top artists overall...")
+    print("Filtering top artists overall...")
     overall = get_artists_plays_data(scrobbles_selected, artists)
     overall_div = top_artist_div("Overall", overall, "total")
 
-    print("Fetching top artists at work...")
+    print("Filtering top artists at work...")
     at_work = get_artists_plays_at_work_data(scrobbles_selected, artists)
     at_work_div = top_artist_div("At Work", at_work, "top-work", align_left=False)
 
-    print("Fetching top late night artists...")
+    print("Filtering top late night artists...")
     late_night = get_artists_plays_late_at_night(scrobbles_selected, artists)
     late_night_div = top_artist_div("Late At Night", late_night, "top-late-night")
 
-    print("Fetching top weekend artists...")
+    print("Filtering top weekend artists...")
     weekends = get_artists_plays_on_weekends(scrobbles_selected, artists)
     weekends_div = top_artist_div("On Weekends", weekends, "top-weekends", align_left=False)
 

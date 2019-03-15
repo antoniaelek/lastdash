@@ -1,5 +1,5 @@
 import datetime
-
+import numpy as np
 
 def get_artists_plays_by_date(scrobbles):
     return (scrobbles[['PlayCount']]
@@ -11,6 +11,9 @@ def get_artists_plays_by_date(scrobbles):
 
 
 def get_artists_plays(scrobbles, period_start=None, period_end=None):
+    if len(scrobbles) == 0:
+        return get_artists_plays_by_date(scrobbles).reset_index().groupby('Artist').sum()
+
     if period_start is None:
         period_start = scrobbles.index.min()[0]
 

@@ -65,8 +65,5 @@ h6{ font-size: 0.5rem; }
     color: #333 !important;
 }
 .Select {
-    width: 120%;
-}
-.Select-value-label{
-    padding-right: 15px;
+    min-width: 10em;
 }

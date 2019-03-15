@@ -6,6 +6,12 @@ import datetime
 
 
 def get_artists_plays_data(scrobbles, artists, top_n=8):
+    if len(scrobbles) == 0:
+        ret = get_artists_plays(scrobbles)
+        ret['ImageURL'] = ''
+        ret['URL'] = ''
+        return ret
+
     start = scrobbles.index.min()[0]
     end = scrobbles.index.max()[0]
 
@@ -17,6 +23,12 @@ def get_artists_plays_data(scrobbles, artists, top_n=8):
 
 
 def get_artists_plays_at_work_data(scrobbles, artists, top_n=8):
+    if len(scrobbles) == 0:
+        ret = get_artists_plays_at_work(scrobbles)
+        ret['ImageURL'] = ''
+        ret['URL'] = ''
+        return ret
+
     start = scrobbles.index.min()[0]
     end = scrobbles.index.max()[0]
 
@@ -28,6 +40,12 @@ def get_artists_plays_at_work_data(scrobbles, artists, top_n=8):
 
 
 def get_artists_plays_on_weekends(scrobbles, artists, top_n=8):
+    if len(scrobbles) == 0:
+        ret = get_artists_plays_weekends(scrobbles)
+        ret['ImageURL'] = ''
+        ret['URL'] = ''
+        return ret
+
     start = scrobbles.index.min()[0]
     end = scrobbles.index.max()[0]
 
@@ -39,6 +57,12 @@ def get_artists_plays_on_weekends(scrobbles, artists, top_n=8):
 
 
 def get_artists_plays_late_at_night(scrobbles, artists, top_n=8):
+    if len(scrobbles) == 0:
+        ret = get_artists_plays_late_night(scrobbles)
+        ret['ImageURL'] = ''
+        ret['URL'] = ''
+        return ret
+
     start = scrobbles.index.min()[0]
     end = scrobbles.index.max()[0]
 
