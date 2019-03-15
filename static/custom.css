@@ -54,9 +54,9 @@ h6{ font-size: 0.5rem; }
     margin: .5em 0;
 }
 .full-screen{
-    min-height: 100vh;
+    min-height: 60vh;
     width: 100%;
-    padding: 0 1rem;
+    padding: 3rem 1rem;
     color: #fffff !important;
 }
 .box-title{

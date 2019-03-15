@@ -28,10 +28,10 @@ def top_artist_div(title, data, id, align_left=True):
         html.H2("no scrobbles")
     ])
     div_text_small = html.Div(className='d-xl-none col-md-12', children=[
-        html.H3("no scrobbles", className="box-title")
+        html.H3("no scrobbles")
     ])
     div_title_small = html.Div(className='d-lg-none col-md-12 pad', children=[
-        html.H3(title)
+        html.H3(title, className="textbox")
     ])
 
     if len(data) > 0:
@@ -97,20 +97,20 @@ late_night_div = top_artist_div("Late At Night", top_late_night, "top-late-night
 
 navbar = dbc.NavbarSimple(
     children=[
-        dbc.NavItem(dbc.NavLink("Last Dash", href="#")),
-        dbc.DropdownMenu(
-            nav=True,
-            in_navbar=True,
-            label="Menu",
-            children=[
-                dbc.DropdownMenuItem("Entry 1"),
-                dbc.DropdownMenuItem("Entry 2"),
-                dbc.DropdownMenuItem(divider=True),
-                dbc.DropdownMenuItem("Entry 3"),
-            ],
-        ),
+        dbc.NavItem(dbc.NavLink("Top Artists", href="#")),
+#        dbc.DropdownMenu(
+#            nav=True,
+#            in_navbar=True,
+#            label="Menu",
+#            children=[
+#                dbc.DropdownMenuItem("Entry 1"),
+#                dbc.DropdownMenuItem("Entry 2"),
+#                dbc.DropdownMenuItem(divider=True),
+#                dbc.DropdownMenuItem("Entry 3"),
+#            ],
+#        ),
     ],
-    brand="Demo",
+    brand="Last Dash",
     brand_href="#",
     sticky="top",
 )
