@@ -11,6 +11,7 @@ from data.scrobbles import get_scrobbles_by_hour
 from data.scrobbles import get_scrobbles
 from data.artists import get_artists
 from data.plays_by_artist import get_artists_plays_data
+from plots.plays_by_artist import get_top_artists_plot
 from plots.plays_by_hour import get_plays_by_hour
 
 import pandas as pd
@@ -154,9 +155,17 @@ def update_output_div(input_value):
     # Intro text
     print("Constructing intro text...")
     intro_text = top_artists_intro_text(intro, top_artists)
-    intro_text_div = html.Div(className='row intro-text', children=[
-        html.Div(className='col-md-2', children=[]),
-        html.Div(className='col-md-8', children=[
+
+    top_artists_pie_trace, top_artists_pie_layout = get_top_artists_plot(top_artists)
+    intro_text_div = html.Div(className='row palette-2', children=[
+        html.Div(className='col-md-3', children=[]),
+        html.Div(className='col-md-3', children=[
+            dcc.Graph(figure={
+                'data': top_artists_pie_trace,
+                'layout': top_artists_pie_layout
+            })
+        ]),
+        html.Div(className='col-md-3 centerflex', children=[
             html.H6(intro_text)
         ])
     ])
@@ -167,7 +176,7 @@ def update_output_div(input_value):
 
     # By hour text
     by_hour_text = by_hour_intro_text(by_hour_data)
-    by_hour_text_div = html.Div(className='row intro-text', children=[
+    by_hour_text_div = html.Div(className='row intro-text palette-3', children=[
         html.Div(className='col-md-2', children=[]),
         html.Div(className='col-md-8', children=[
             html.H6(by_hour_text + " Here's your scrobbling activity breakdown by hours...")
@@ -176,7 +185,7 @@ def update_output_div(input_value):
 
     # By hour graph
     by_hour_trace, by_hour_layout = get_plays_by_hour(by_hour_data)
-    by_hour_div = html.Div(className='row', children=[
+    by_hour_div = html.Div(className='row palette-3', children=[
         html.Div(className='col-md-1', children=[]),
         html.Div(className='col-md-10', children=[
             dcc.Graph(figure={
@@ -186,7 +195,7 @@ def update_output_div(input_value):
         ])
     ])
 
-    return [intro_text_div, top_artists_div, by_hour_text_div, by_hour_div]
+    return [top_artists_div, intro_text_div, by_hour_text_div, by_hour_div]
 
 
 def by_hour_intro_text(by_hour_data):

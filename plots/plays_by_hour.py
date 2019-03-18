@@ -29,7 +29,9 @@ def get_plays_by_hour(data):
             range=[0-max(data['PlayCount'])*0.1, max(data['PlayCount'])*1.1],
             ticks='',
             showticklabels=False
-        )
+        ),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)'
     )
 
     return [trace], layout

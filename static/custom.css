@@ -21,7 +21,18 @@ h3{ font-size: 3.50rem; }
 h4{ font-size: 2.50rem; }
 h5{ font-size: 2.00rem; }
 h6{ font-size: 1.75rem; }
-
+.palette-1{
+    background-color: #fff;
+}
+.palette-2{
+    background-color: #ddd;
+}
+.palette-3{
+    background-color: #bbb
+}
+.modebar{
+    display: none !important;
+}
 .pad{
     padding: 10% 0 5% 0;
 }
@@ -57,6 +68,10 @@ h6{ font-size: 1.75rem; }
     align-items: center;
     padding: .5em 0 5em 0;
     margin: .5em 0;
+}
+.centerflex{
+    display: flex;
+    align-items: center
 }
 .full-screen{
     min-height: 60vh;
