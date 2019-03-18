@@ -1,5 +1,5 @@
 import datetime
-import numpy as np
+
 
 def get_artists_plays_by_date(scrobbles):
     return (scrobbles[['PlayCount']]
@@ -8,6 +8,23 @@ def get_artists_plays_by_date(scrobbles):
             .reset_index()
             .sort_values(['Date', 'PlayCount'], ascending=False)
             .set_index('Date'))
+
+
+def get_artists_plays_data(scrobbles, artists, top_n=8):
+    if len(scrobbles) == 0:
+        ret = get_artists_plays(scrobbles)
+        ret['ImageURL'] = ''
+        ret['URL'] = ''
+        return ret
+
+    start = scrobbles.index.min()[0]
+    end = scrobbles.index.max()[0]
+
+    artists = (get_artists_plays(scrobbles, start, end)
+        .merge(artists[['URL', 'ImageURL']], how='left', left_index=True, right_index=True))
+    artists.head()
+
+    return artists.head(top_n).sort_values('PlayCount')
 
 
 def get_artists_plays(scrobbles, period_start=None, period_end=None):
@@ -28,16 +45,43 @@ def get_artists_plays(scrobbles, period_start=None, period_end=None):
             .sort_values('PlayCount', ascending=False))
 
 
-def get_artists_plays_at_work(scrobbles, period_start=None, period_end=None):
-    at_work = scrobbles[(scrobbles['IsWeekend'] == False) & (scrobbles['Hour'] > 6) & (scrobbles['Hour'] < 19)]
-    return get_artists_plays(at_work, period_start, period_end)
+def merge_artists_plays(scrobbles, summed, artists, top_n=8):
+    if len(scrobbles) == 0:
+        ret = summed
+        ret['ImageURL'] = ''
+        ret['URL'] = ''
+        return ret
+
+    result = summed.merge(artists[['URL', 'ImageURL']], how='left', left_index=True, right_index=True)
+
+    return result.head(top_n).sort_values('PlayCount')
 
 
-def get_artists_plays_weekends(scrobbles, period_start=None, period_end=None):
-    weekends = scrobbles[(scrobbles['IsWeekend'] == True)]
-    return get_artists_plays(weekends, period_start, period_end)
+def get_artists_plays_at_workdays(scrobbles, artists, period_start=None, period_end=None, top_n=8):
+    filtered = scrobbles[scrobbles['IsWeekend'] == False]
+    summed = get_artists_plays(filtered, period_start, period_end)
+    return merge_artists_plays(scrobbles, summed, artists, top_n)
 
 
-def get_artists_plays_late_night(scrobbles, period_start=None, period_end=None):
-    late_night = scrobbles[(scrobbles['Hour'] < 5) | (scrobbles['Hour'] > 20)]
-    return get_artists_plays(late_night, period_start, period_end)
+def get_artists_plays_weekends(scrobbles, artists, period_start=None, period_end=None, top_n=8):
+    filtered = scrobbles[(scrobbles['IsWeekend'] == True)]
+    summed = get_artists_plays(filtered, period_start, period_end)
+    return merge_artists_plays(scrobbles, summed, artists, top_n)
+
+
+def get_artists_plays_morning(scrobbles, artists, period_start=None, period_end=None, top_n=8):
+    filtered = scrobbles[(scrobbles['Hour'] >= 4) & (scrobbles['Hour'] < 12)]
+    summed = get_artists_plays(filtered, period_start, period_end)
+    return merge_artists_plays(scrobbles, summed, artists, top_n)
+
+
+def get_artists_plays_afternoon(scrobbles, artists, period_start=None, period_end=None, top_n=8):
+    filtered = scrobbles[(scrobbles['Hour'] >= 12) & (scrobbles['Hour'] < 20)]
+    summed = get_artists_plays(filtered, period_start, period_end)
+    return merge_artists_plays(scrobbles, summed, artists, top_n)
+
+
+def get_artists_plays_night(scrobbles, artists, period_start=None, period_end=None, top_n=8):
+    filtered = scrobbles[(scrobbles['Hour'] >= 20) | (scrobbles['Hour'] < 4)]
+    summed = get_artists_plays(filtered, period_start, period_end)
+    return merge_artists_plays(scrobbles, summed, artists, top_n)

@@ -1,6 +1,10 @@
 import pandas as pd
 
 
+def get_scrobbles_by_hour(scrobbles):
+    return scrobbles[['Hour', 'PlayCount']].groupby('Hour').sum().reindex(list(range(0, 24)), fill_value=0)
+
+
 def get_scrobbles(filename="csv/scrobbles.csv"):
     return _get_logs(filename=filename, fields=['Timestamp', 'Track', 'Artist', 'Album', 'URL'], header=None, sep='\t')
 

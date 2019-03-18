@@ -6,17 +6,14 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 
+from data.plays_by_hour import get_plays_by_hour_data
+from data.scrobbles import get_scrobbles_by_hour
 from data.scrobbles import get_scrobbles
 from data.artists import get_artists
+from data.plays_by_artist import get_artists_plays_data
+from plots.plays_by_hour import get_plays_by_hour
 
 import pandas as pd
-
-from plots.plays_by_artist import get_artists_plays_at_work_plot, get_artists_plays_data
-from plots.plays_by_artist import get_artists_plays_at_work_data
-from plots.plays_by_artist import get_artists_plays_late_at_night
-from plots.plays_by_artist import get_artists_plays_on_weekends
-from plots.tags import top_tags_plot
-from plots.artists import top_artists_plot
 
 
 def top_artist_div(title, data, id, align_left=True):
@@ -31,10 +28,10 @@ def top_artist_div(title, data, id, align_left=True):
     ])
     div_text_large = html.Div(className=div_text_large_class, children=[
         html.H4(title, className='textbox'),
-        html.H2("No Scrobbles")
+        html.H2("Apparently nobody")
     ])
     div_text_small = html.Div(className='d-xl-none col-md-12', children=[
-        html.H3("No Scrobbles")
+        html.H3("Apparently nobody")
     ])
     div_title_small = html.Div(className='d-lg-none col-md-12 pad', children=[
         html.H3(title, className="textbox")
@@ -120,15 +117,16 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.layout = html.Div(className='text-center', children=[
     navbar,
 
-    # Top artist at work, on weekends and late at night
+    # Top artist
     html.Div(className='row', children=[
         html.Div(className='col-md-12', children=[
-            html.H1('Your top artists', className='')
+            html.H1('Your Last Dash', className='')
         ])
     ]),
 
     html.Div(id="content", children=[])
 ])
+
 
 @app.callback(
     Output(component_id='content', component_property='children'),
@@ -137,30 +135,93 @@ app.layout = html.Div(className='text-center', children=[
 def update_output_div(input_value):
     if input_value == 'This week':
         scrobbles_selected = scrobbles[scrobbles['Timestamp'] >= pd.Timestamp(week_start)]
+        intro = input_value
     elif input_value == 'This month':
         scrobbles_selected = scrobbles[scrobbles['Timestamp'] >= pd.Timestamp(month_start)]
+        intro = input_value
     elif input_value == 'This year':
         scrobbles_selected = scrobbles[scrobbles['Year'] == int(today.year)]
+        intro = input_value
     else:
         scrobbles_selected = scrobbles[scrobbles['Year'] == int(input_value)]
+        intro = 'In ' + input_value
 
-    print("Filtering top artists overall...")
-    overall = get_artists_plays_data(scrobbles_selected, artists)
-    overall_div = top_artist_div("Overall", overall, "total")
+    # Top artist
+    print("Filtering top artists...")
+    top_artists = get_artists_plays_data(scrobbles_selected, artists, top_n=500)
+    top_artists_div = top_artist_div("Your top artist", top_artists, "total")
 
-    print("Filtering top artists at work...")
-    at_work = get_artists_plays_at_work_data(scrobbles_selected, artists)
-    at_work_div = top_artist_div("At Work", at_work, "top-work", align_left=False)
+    # Intro text
+    print("Constructing intro text...")
+    intro_text = top_artists_intro_text(intro, top_artists)
+    intro_text_div = html.Div(className='row intro-text', children=[
+        html.Div(className='col-md-2', children=[]),
+        html.Div(className='col-md-8', children=[
+            html.H5(intro_text)
+        ])
+    ])
 
-    print("Filtering top late night artists...")
-    late_night = get_artists_plays_late_at_night(scrobbles_selected, artists)
-    late_night_div = top_artist_div("Late At Night", late_night, "top-late-night")
+    # By hour graph
+    print("Grouping listening data by hour...")
+    by_hour_data = get_plays_by_hour_data(scrobbles_selected)
+    by_hour_trace, by_hour_layout = get_plays_by_hour(by_hour_data)
+    by_hour_div = html.Div(className='row', children=[
+        html.Div(className='col-md-1', children=[]),
+        html.Div(className='col-md-10', children=[
+            dcc.Graph(figure={
+                'data': by_hour_trace,
+                'layout': by_hour_layout
+            })
+        ])
+    ])
 
-    print("Filtering top weekend artists...")
-    weekends = get_artists_plays_on_weekends(scrobbles_selected, artists)
-    weekends_div = top_artist_div("On Weekends", weekends, "top-weekends", align_left=False)
+    # By hour text
+    by_hour_text = by_hour_intro_text(by_hour_data)
+    by_hour_text_div = html.Div(className='row intro-text', children=[
+        html.Div(className='col-md-2', children=[]),
+        html.Div(className='col-md-8', children=[
+            html.H5(by_hour_text)
+        ])
+    ])
 
-    return [overall_div, at_work_div, late_night_div, weekends_div]
+    return [intro_text_div, top_artists_div, by_hour_text_div, by_hour_div]
+
+
+def by_hour_intro_text(by_hour_data):
+    morning = int(by_hour_data.iloc[4:12].sum())
+    afternoon = int(by_hour_data.iloc[12:20].sum())
+    night = int(by_hour_data.iloc[20:24].append(by_hour_data.iloc[0:4]).sum())
+
+    top_period = 'in the morning' if morning == max(morning, afternoon, night) else ''
+    top_period = ' and in the afternoon' if afternoon == max(morning, afternoon, night) else top_period
+    top_period = ' and during the night' if night == max(morning, afternoon, night) else top_period
+
+    if top_period[:5] == " and ":
+        top_period = top_period[5:]
+
+    if morning+afternoon+night == 0:
+        return 'You never scrobbled anything at all.'
+    else:
+        top_percent = round((max(morning, afternoon, night) / (morning+afternoon+night) * 100))
+
+    return "You scrobbled most tracks ({}%) {}.".format(top_percent, top_period)
+
+
+def top_artists_intro_text(period, top_artists):
+    intro_text = '{}, there were no scrobbles.'.format(period)
+    if len(top_artists['PlayCount']) > 0:
+        overall_percent_top_1 = int(round(top_artists['PlayCount'].iloc[-1] / top_artists.sum().PlayCount * 100))
+        intro_text = "{}, {}% of your scrobbles were by {}.".format(period, overall_percent_top_1, top_artists.index[-1])
+    if len(top_artists['PlayCount']) > 1:
+        overall_percent_top_2 = int(round(top_artists['PlayCount'].iloc[-2] / top_artists.sum().PlayCount * 100))
+        intro_text += " Another {}% were by {}".format(overall_percent_top_2, top_artists.index[-2])
+
+        if len(top_artists['PlayCount']) > 2:
+            overall_percent_top_3 = int(round(top_artists['PlayCount'].iloc[-3] / top_artists.sum().PlayCount * 100))
+            intro_text += ", and {}% were by {}.".format(overall_percent_top_3, top_artists.index[-3])
+        else:
+            intro_text += "."
+    return intro_text
 
 
 if __name__ == '__main__':
