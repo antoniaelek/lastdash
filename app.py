@@ -157,13 +157,24 @@ def update_output_div(input_value):
     intro_text_div = html.Div(className='row intro-text', children=[
         html.Div(className='col-md-2', children=[]),
         html.Div(className='col-md-8', children=[
-            html.H5(intro_text)
+            html.H6(intro_text)
+        ])
+    ])
+
+    # By hour data
+    print("Grouping listening data by hour...")
+    by_hour_data = get_plays_by_hour_data(scrobbles_selected)
+
+    # By hour text
+    by_hour_text = by_hour_intro_text(by_hour_data)
+    by_hour_text_div = html.Div(className='row intro-text', children=[
+        html.Div(className='col-md-2', children=[]),
+        html.Div(className='col-md-8', children=[
+            html.H6(by_hour_text + " Here's your scrobbling activity breakdown by hours...")
         ])
     ])
 
     # By hour graph
-    print("Grouping listening data by hour...")
-    by_hour_data = get_plays_by_hour_data(scrobbles_selected)
     by_hour_trace, by_hour_layout = get_plays_by_hour(by_hour_data)
     by_hour_div = html.Div(className='row', children=[
         html.Div(className='col-md-1', children=[]),
@@ -172,15 +183,6 @@ def update_output_div(input_value):
                 'data': by_hour_trace,
                 'layout': by_hour_layout
             })
-        ])
-    ])
-
-    # By hour text
-    by_hour_text = by_hour_intro_text(by_hour_data)
-    by_hour_text_div = html.Div(className='row intro-text', children=[
-        html.Div(className='col-md-2', children=[]),
-        html.Div(className='col-md-8', children=[
-            html.H5(by_hour_text)
         ])
     ])
 
@@ -200,7 +202,7 @@ def by_hour_intro_text(by_hour_data):
         top_period = top_period[5:]
 
     if morning+afternoon+night == 0:
-        return 'You never scrobbled anything at all.'
+        return "You didn't scrobble anything at all."
     else:
         top_percent = round((max(morning, afternoon, night) / (morning+afternoon+night) * 100))
 
