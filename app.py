@@ -184,7 +184,10 @@ def update_output_div(input_value):
     by_hour_data = get_plays_by_hour_data(scrobbles_selected)
 
     # By hour text
-    by_hour_text = by_hour_intro_text(by_hour_data)
+    morning = int(by_hour_data.iloc[4:12].sum())
+    afternoon = int(by_hour_data.iloc[12:19].sum())
+    night = int(by_hour_data.iloc[19:].append(by_hour_data.iloc[0:4]).sum())
+    by_hour_text = by_hour_intro_text(morning, afternoon, night)
     by_hour_text_div = html.Div(className='row intro-text palette palette-3', children=[
         html.Div(className='col-md-2', children=[]),
         html.Div(className='col-md-8', children=[
@@ -205,14 +208,29 @@ def update_output_div(input_value):
         ])
     ])
 
-    return [top_artists_div, intro_text_div, by_hour_text_div, by_hour_div]
+    # Total scrobbles
+    total_scrobbles_text_div = html.Div(className='row palette palette-3 pad-sm-b', children=[
+        html.Div(className='col-md-2', children=[]),
+        html.Div(className='col-md-2', children=[
+            html.H1(str(morning)),
+            html.H6("Morning scrobbles")
+        ]),
+        html.Div(className='col-md-1', children=[]),
+        html.Div(className='col-md-2', children=[
+            html.H1(str(afternoon)),
+            html.H6("Afternoon scrobbles")
+        ]),
+        html.Div(className='col-md-1', children=[]),
+        html.Div(className='col-md-2', children=[
+            html.H1(str(night)),
+            html.H6("Night scrobbles")
+        ])
+    ])
+
+    return [top_artists_div, intro_text_div, by_hour_text_div, by_hour_div, total_scrobbles_text_div]
 
 
-def by_hour_intro_text(by_hour_data):
-    morning = int(by_hour_data.iloc[4:12].sum())
-    afternoon = int(by_hour_data.iloc[12:20].sum())
-    night = int(by_hour_data.iloc[20:24].append(by_hour_data.iloc[0:4]).sum())
-
+def by_hour_intro_text(morning, afternoon, night):
     top_period = 'in the morning' if morning == max(morning, afternoon, night) else ''
     top_period = ' and in the afternoon' if afternoon == max(morning, afternoon, night) else top_period
     top_period = ' and during the night' if night == max(morning, afternoon, night) else top_period
