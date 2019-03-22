@@ -69,8 +69,6 @@ def top_artist_div(title, data, id, align_left=True):
 #                                            #
 ##############################################
 
-# colors = ['#d7191c', '#2b83ba', '#abdda4', '#fdae61', '#ffff44']
-
 username='muser1901'
 avatar='https://lastfm-img2.akamaized.net/i/u/6e51680a8855f69fbb8dcd65dffdb34a.png'
 
@@ -190,12 +188,13 @@ def update_output_div(input_value):
     by_hour_text_div = html.Div(className='row intro-text palette palette-3', children=[
         html.Div(className='col-md-2', children=[]),
         html.Div(className='col-md-8', children=[
-            html.H6(by_hour_text + " Here's your scrobbling activity breakdown by hours.")
+            html.H6(by_hour_text),
+            html.H6("Here's how you scrobbled by hours.")
         ])
     ])
 
     # By hour graph
-    by_hour_trace, by_hour_layout = get_plays_by_hour(by_hour_data)
+    by_hour_trace, by_hour_layout = get_plays_by_hour(by_hour_data, color='#333')
     by_hour_div = html.Div(className='row palette palette-3', children=[
         html.Div(className='col-lg-1', children=[]),
         html.Div(className='col-lg-10 col-md-12', children=[
