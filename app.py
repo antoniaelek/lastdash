@@ -54,10 +54,10 @@ def top_artist_div(title, data, id, align_left=True):
         ])
 
     if align_left:
-        div = html.Div(className='row centerbox full-screen palette palette-1', id=id,
+        div = html.Div(className='row centerbox half-screen palette palette-1', id=id,
                        children=[div_title_small, div_img, div_text_large, div_text_small])
     else:
-        div = html.Div(className='row centerbox full-screen palette palette-1', id=id,
+        div = html.Div(className='row centerbox half-screen palette palette-1', id=id,
                        children=[div_title_small, div_text_large, div_img, div_text_small])
 
     return div
@@ -69,7 +69,11 @@ def top_artist_div(title, data, id, align_left=True):
 #                                            #
 ##############################################
 
-colors = ['#d7191c', '#2b83ba', '#abdda4', '#fdae61', '#ffff44']
+# colors = ['#d7191c', '#2b83ba', '#abdda4', '#fdae61', '#ffff44']
+
+username='muser1901'
+avatar='https://lastfm-img2.akamaized.net/i/u/6e51680a8855f69fbb8dcd65dffdb34a.png'
+
 external_stylesheets = ['https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css',
                         '/static/custom.css',
                         'dbc.themes.BOOTSTRAP']
@@ -119,9 +123,11 @@ app.layout = html.Div(className='text-center', children=[
     navbar,
 
     # Top artist
-    html.Div(className='row', children=[
-        html.Div(className='col-md-12', children=[
-            html.H1('Your Last Dash', className='')
+    html.Div(className='row palette palette-0 half-screen centerbox', children=[
+        html.Div(className='col-md-12 pad-sm-b', children=[
+            html.Img(className='gridbox-xs avatar', src=avatar),
+            html.H2('Your life in music', className='inverted-text'),
+            html.H5(username + ', here is your scrobbles dashboard', className='inverted-text')
         ])
     ]),
 
