@@ -26,11 +26,14 @@ def get_top_artists_plot(top_artists, color=None, title_size=28):
         data += [(100 - sum(data))]
         labels += ['others']
 
+    colors = ['#fff', '#eee', '#ddd', '#ccc']
+
     trace = go.Pie(
         labels=labels,
         values=data,
         hoverinfo='label+percent',
-        textinfo='label'
+        textinfo='none',
+        marker=dict(colors=colors, line=dict(width=0))
     )
 
     layout = go.Layout(

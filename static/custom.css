@@ -21,14 +21,26 @@ h3{ font-size: 3.50rem; }
 h4{ font-size: 2.50rem; }
 h5{ font-size: 2.00rem; }
 h6{ font-size: 1.75rem; }
+.inverted-text{
+    color: #fff;
+}
+.palette{
+    background-size: cover;
+    background-attachment: fixed;
+}
 .palette-1{
-    background-color: #fff;
+    background-color: #ddd;
 }
 .palette-2{
-    background-color: #ddd;
+    background-image: url('/static/img/photo-1524368535928-5b5e00ddc76b.jpg');
+    color: #fff;
 }
 .palette-3{
     background-color: #bbb
+}
+.palette-4{
+    background-image: url('/static/img/photo-1517260286907-f7d84f1f9ba4.jpg');
+    color: #fff;
 }
 .modebar, ._dash-undo-redo{
     display: none !important;
@@ -38,6 +50,9 @@ h6{ font-size: 1.75rem; }
 }
 .pad-sm{
     padding: 5% 0 5% 0;
+}
+.pad-sm-b{
+    padding: 0% 0 5% 0;
 }
 .max-height-400{
     max-height: 400px;

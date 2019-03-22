@@ -54,10 +54,10 @@ def top_artist_div(title, data, id, align_left=True):
         ])
 
     if align_left:
-        div = html.Div(className='row centerbox full-screen', id=id,
+        div = html.Div(className='row centerbox full-screen palette palette-1', id=id,
                        children=[div_title_small, div_img, div_text_large, div_text_small])
     else:
-        div = html.Div(className='row centerbox full-screen', id=id,
+        div = html.Div(className='row centerbox full-screen palette palette-1', id=id,
                        children=[div_title_small, div_text_large, div_img, div_text_small])
 
     return div
@@ -159,7 +159,7 @@ def update_output_div(input_value):
     # Top artists pie
     print("Top artists pie chart...")
     top_artists_pie_trace, top_artists_pie_layout = get_top_artists_plot(top_artists)
-    intro_text_div = html.Div(className='row palette-2', children=[
+    intro_text_div = html.Div(className='row palette palette-2', children=[
         html.Div(className='col-lg-2 col-md-2', children=[]),
         html.Div(className='col-lg-4 col-md-8', children=[
             dcc.Graph(figure={
@@ -169,9 +169,10 @@ def update_output_div(input_value):
         ]),
         html.Div(className='col-sm-2 d-lg-none', children=[]),
         html.Div(className='col-md-2 d-lg-none', children=[]),
-        html.Div(className='col-lg-4 col-md-8 centerflex pad-sm', children=[
-            html.H6(intro_text)
-        ])
+        html.Div(className='col-lg-4 col-md-8 col-sm-12 centerflex', children=[
+            html.H6(intro_text, className='inverted-text')
+        ]),
+        html.Div(className='d-lg-none col-md-2 pad-sm', children=[]),
     ])
 
     # By hour data
@@ -180,7 +181,7 @@ def update_output_div(input_value):
 
     # By hour text
     by_hour_text = by_hour_intro_text(by_hour_data)
-    by_hour_text_div = html.Div(className='row intro-text palette-3', children=[
+    by_hour_text_div = html.Div(className='row intro-text palette palette-3', children=[
         html.Div(className='col-md-2', children=[]),
         html.Div(className='col-md-8', children=[
             html.H6(by_hour_text + " Here's your scrobbling activity breakdown by hours.")
@@ -189,7 +190,7 @@ def update_output_div(input_value):
 
     # By hour graph
     by_hour_trace, by_hour_layout = get_plays_by_hour(by_hour_data)
-    by_hour_div = html.Div(className='row palette-3', children=[
+    by_hour_div = html.Div(className='row palette palette-3', children=[
         html.Div(className='col-lg-1', children=[]),
         html.Div(className='col-lg-10 col-md-12', children=[
             dcc.Graph(figure={
