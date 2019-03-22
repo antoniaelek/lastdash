@@ -156,16 +156,20 @@ def update_output_div(input_value):
     print("Constructing intro text...")
     intro_text = top_artists_intro_text(intro, top_artists)
 
+    # Top artists pie
+    print("Top artists pie chart...")
     top_artists_pie_trace, top_artists_pie_layout = get_top_artists_plot(top_artists)
     intro_text_div = html.Div(className='row palette-2', children=[
-        html.Div(className='col-md-3', children=[]),
-        html.Div(className='col-md-3', children=[
+        html.Div(className='col-lg-2 col-md-2', children=[]),
+        html.Div(className='col-lg-4 col-md-8', children=[
             dcc.Graph(figure={
                 'data': top_artists_pie_trace,
                 'layout': top_artists_pie_layout
             })
         ]),
-        html.Div(className='col-md-3 centerflex', children=[
+        html.Div(className='col-sm-2 d-lg-none', children=[]),
+        html.Div(className='col-md-2 d-lg-none', children=[]),
+        html.Div(className='col-lg-4 col-md-8 centerflex pad-sm', children=[
             html.H6(intro_text)
         ])
     ])
@@ -179,15 +183,15 @@ def update_output_div(input_value):
     by_hour_text_div = html.Div(className='row intro-text palette-3', children=[
         html.Div(className='col-md-2', children=[]),
         html.Div(className='col-md-8', children=[
-            html.H6(by_hour_text + " Here's your scrobbling activity breakdown by hours...")
+            html.H6(by_hour_text + " Here's your scrobbling activity breakdown by hours.")
         ])
     ])
 
     # By hour graph
     by_hour_trace, by_hour_layout = get_plays_by_hour(by_hour_data)
     by_hour_div = html.Div(className='row palette-3', children=[
-        html.Div(className='col-md-1', children=[]),
-        html.Div(className='col-md-10', children=[
+        html.Div(className='col-lg-1', children=[]),
+        html.Div(className='col-lg-10 col-md-12', children=[
             dcc.Graph(figure={
                 'data': by_hour_trace,
                 'layout': by_hour_layout

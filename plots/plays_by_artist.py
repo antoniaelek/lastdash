@@ -22,26 +22,28 @@ def get_top_artists_plot(top_artists, color=None, title_size=28):
         data += [int(round(top_artists['PlayCount'].iloc[-3] / top_artists.sum().PlayCount * 100))]
         labels += [top_artists.index[-3]]
 
-    if overall_percent_top_1 < 100:
+    if sum(data) < 100:
         data += [(100 - sum(data))]
         labels += ['others']
 
     trace = go.Pie(
         labels=labels,
         values=data,
+        hoverinfo='label+percent',
+        textinfo='label'
     )
 
     layout = go.Layout(
         # title='Top artists played at work',
         # titlefont=dict(size=title_size),
         showlegend=False,
-        margin=go.layout.Margin(
-            l=0,
-            r=0,
-            b=0,
-            t=0,
-            pad=0
-        ),
+        # margin=go.layout.Margin(
+        #     l=0,
+        #     r=0,
+        #     b=0,
+        #     t=10,
+        #     pad=0
+        # ),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)'
     )
