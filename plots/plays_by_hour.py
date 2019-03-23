@@ -1,12 +1,13 @@
 import plotly.graph_objs as go
 
 
-def get_plays_by_hour(data, color='#000', color_grid='#777', width=3):
+def get_plays_by_hour(data, color='#000', color_grid='#777', width=3, font_family='Arial'):
     trace = go.Scatter(
         x=data.index,
         y=data['PlayCount'],
         mode='lines',
         hoverinfo='none',
+        fill='tozeroy',
         line=dict(
             shape='spline',
             color=color,
@@ -35,6 +36,9 @@ def get_plays_by_hour(data, color='#000', color_grid='#777', width=3):
             range=[0-max(data['PlayCount'])*0.1, max(data['PlayCount'])*1.1],
             ticks='',
             showticklabels=False
+        ),
+        font=dict(
+            family=font_family
         ),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)'

@@ -7,12 +7,13 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 
 from data.plays_by_hour import get_plays_by_hour_data
-from data.scrobbles import get_scrobbles_by_hour
+from data.plays_by_tag import get_tags
 from data.scrobbles import get_scrobbles
 from data.artists import get_artists
 from data.plays_by_artist import get_artists_plays_data
 from plots.plays_by_artist import get_top_artists_plot
 from plots.plays_by_hour import get_plays_by_hour
+from plots.plays_by_tag import top_tags_plot
 
 import pandas as pd
 
@@ -25,7 +26,7 @@ def top_artist_div(title, data, id, align_left=True):
         div_text_large_class = 'd-none d-lg-block col-lg-6 justify-content-lg-start text-right'  # right-tab in-front'
 
     div_img = html.Div(className=img_class, children=[
-            html.Img(className='gridbox', src='https://lastfm-img2.akamaized.net/i/u/174s/c6f59c1e5e7240a4c0d427abd71f3dbb')
+        html.Img(className='gridbox', src='https://lastfm-img2.akamaized.net/i/u/174s/c6f59c1e5e7240a4c0d427abd71f3dbb')
     ])
     div_text_large = html.Div(className=div_text_large_class, children=[
         html.H4(title, className='textbox'),
@@ -69,8 +70,8 @@ def top_artist_div(title, data, id, align_left=True):
 #                                            #
 ##############################################
 
-username='muser1901'
-avatar='https://lastfm-img2.akamaized.net/i/u/6e51680a8855f69fbb8dcd65dffdb34a.png'
+username = 'muser1901'
+avatar = 'https://lastfm-img2.akamaized.net/i/u/6e51680a8855f69fbb8dcd65dffdb34a.png'
 
 external_stylesheets = ['https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css',
                         '/static/custom.css',
@@ -85,29 +86,21 @@ artists = get_artists()
 today = datetime.date.today()
 min_date = scrobbles.index.min()[0]
 max_date = today
-periods = list(range(min_date.year,max_date.year))
+periods = list(range(min_date.year, max_date.year))
 periods += ['This year', 'This month', 'This week']
 periods.reverse()
 
 week_start = today - datetime.timedelta(days=7)
-month_start = today - datetime.timedelta(days=today.day-1)
-
-# print("Fetching top tags...")
-# top_tags_trace, top_tags_layout = top_tags_plot(color=colors[0])
-#
-# print("Fetching top artists...")
-# top_artists_trace, top_artists_layout = top_artists_plot(color=colors[1])
-
+month_start = today - datetime.timedelta(days=today.day - 1)
 
 navbar = dbc.NavbarSimple(
     children=[
-        #dbc.NavItem(dbc.NavLink("Top Artists", href="#")),
         dcc.Dropdown(
             id='year-input',
             options=[{'label': str(i), 'value': str(i)} for i in periods],
             value='This week',
             clearable=False,
-            style={'bgcolor':'#f8f9fa','bordercolor':'#f8f9fa'}
+            style={'bgcolor': '#f8f9fa', 'bordercolor': '#f8f9fa'}
         )
     ],
     brand="Last Dash",
@@ -151,14 +144,17 @@ def update_output_div(input_value):
         scrobbles_selected = scrobbles[scrobbles['Year'] == int(input_value)]
         intro = 'In ' + input_value
 
+    if len(scrobbles_selected) == 0:
+        return [html.Div(className='row palette palette-1 half-screen', children=[
+            html.Div(className='col-md-12 valign', children=[
+                html.H6(intro + ", you didn't scrobble anything.")
+            ]),
+        ])]
+
     # Top artist
     print("Filtering top artists...")
     top_artists = get_artists_plays_data(scrobbles_selected, artists, top_n=500)
     top_artists_div = top_artist_div("Your top artist", top_artists, "total")
-
-    # Intro text
-    print("Constructing intro text...")
-    intro_text = top_artists_intro_text(intro, top_artists)
 
     # Top artists pie
     print("Top artists pie chart...")
@@ -174,7 +170,7 @@ def update_output_div(input_value):
         html.Div(className='col-sm-2 d-lg-none', children=[]),
         html.Div(className='col-md-2 d-lg-none', children=[]),
         html.Div(className='col-lg-4 col-md-8 col-sm-12 centerflex', children=[
-            html.H6(intro_text, className='inverted-text')
+            html.H6(children=top_artists_intro_text(intro, top_artists, 'inverted-highlighted-text'), className='inverted-text')
         ]),
         html.Div(className='d-lg-none col-md-2 pad-sm', children=[]),
     ])
@@ -187,11 +183,10 @@ def update_output_div(input_value):
     morning = int(by_hour_data.iloc[4:12].sum())
     afternoon = int(by_hour_data.iloc[12:19].sum())
     night = int(by_hour_data.iloc[19:].append(by_hour_data.iloc[0:4]).sum())
-    by_hour_text = by_hour_intro_text(morning, afternoon, night)
     by_hour_text_div = html.Div(className='row intro-text palette palette-3', children=[
         html.Div(className='col-md-2', children=[]),
         html.Div(className='col-md-8', children=[
-            html.H6(by_hour_text),
+            html.H6(children=by_hour_intro_text(morning, afternoon, night, "highlighted-text")),
             html.H6("Here's how you scrobbled by hours.")
         ])
     ])
@@ -227,10 +222,57 @@ def update_output_div(input_value):
         ])
     ])
 
-    return [top_artists_div, intro_text_div, by_hour_text_div, by_hour_div, total_scrobbles_text_div]
+    # Top tags
+    print("Fetching top tags...")
+    top_tags_data = get_tags(scrobbles_selected)
+    top_tags_trace, top_tags_layout = top_tags_plot(top_tags_data)
+    top_tags_div = html.Div(className='row palette palette-4 pad-sm-b', children=[
+        html.Div(className='col-lg-2 col-md-12', children=[]),
+        html.Div(className='col-lg-4 col-md-12', children=[
+            dcc.Graph(figure={
+                'data': top_tags_trace,
+                'layout': top_tags_layout
+            })
+        ]),
+        html.Div(className='col-lg-4 col-md-12 valign', children=[
+            html.H6(children=top_tags_text(top_tags_data, 'highlighted-text'))
+        ])
+    ])
+
+    return [top_artists_div, intro_text_div, by_hour_text_div, by_hour_div, total_scrobbles_text_div, top_tags_div]
 
 
-def by_hour_intro_text(morning, afternoon, night):
+def top_tags_text(data, highlight_class):
+    percents = data['Percent'].unique()
+    spans = []
+    if len(percents) > 0:
+        top_tags = get_tags_by_percent(data, percents[0])
+        if len(top_tags) > 1:
+            spans += [html.Span('Your top tags were: ')]
+            for tag in top_tags[:-1]:
+                spans += [html.Span(tag, className=highlight_class)]
+                spans += [html.Span(', ')]
+            spans += [html.Span(" and ")]
+            spans += [html.Span(top_tags[-1], className=highlight_class)]
+        else:
+            spans += [html.Span('Tour top tag was: ')]
+            spans += [html.Span(top_tags[0], className=highlight_class)]
+
+        spans += [html.Span(', which appeared in ')]
+        spans += [html.Span(data.iloc[0].PercentPretty, className=highlight_class)]
+        spans += [html.Span(' of your scrobbles.')]
+    return spans
+
+
+def get_tags_by_percent(data, percent):
+    max_data = data[data['Percent'] == percent]
+    if len(max_data) == 0:
+        return None
+
+    return list(max_data.index)
+
+
+def by_hour_intro_text(morning, afternoon, night, highlight_class):
     top_period = 'in the morning' if morning == max(morning, afternoon, night) else ''
     top_period = ' and in the afternoon' if afternoon == max(morning, afternoon, night) else top_period
     top_period = ' and during the night' if night == max(morning, afternoon, night) else top_period
@@ -238,29 +280,48 @@ def by_hour_intro_text(morning, afternoon, night):
     if top_period[:5] == " and ":
         top_period = top_period[5:]
 
-    if morning+afternoon+night == 0:
-        return "You didn't scrobble anything at all."
-    else:
-        top_percent = round((max(morning, afternoon, night) / (morning+afternoon+night) * 100))
+    if morning + afternoon + night == 0:
+        return [html.Span("You didn't scrobble anything at all.")]
 
-    return "You scrobbled most tracks ({}%) {}.".format(top_percent, top_period)
+    top_percent = round((max(morning, afternoon, night) / (morning + afternoon + night) * 100))
+
+    spans = []
+    spans += [html.Span('You scrobbled most tracks ')]
+    spans += [html.Span(f'({top_percent}%) {top_period}', className=highlight_class)]
+    spans += [html.Span('.')]
+    return spans
 
 
-def top_artists_intro_text(period, top_artists):
-    intro_text = '{}, there were no scrobbles.'.format(period)
+def top_artists_intro_text(period, top_artists, highlight_class):
+    if len(top_artists['PlayCount']) == 0:
+        return ['{}, there were no scrobbles.'.format(period)]
+
+    spans = []
     if len(top_artists['PlayCount']) > 0:
         overall_percent_top_1 = int(round(top_artists['PlayCount'].iloc[-1] / top_artists.sum().PlayCount * 100))
-        intro_text = "{}, {}% of your scrobbles were by {}.".format(period, overall_percent_top_1, top_artists.index[-1])
+        spans += [html.Span('{}, '.format(period))]
+        spans += [html.Span(f'{overall_percent_top_1}%', className=highlight_class)]
+        spans += [html.Span(' of your scrobbles were by ')]
+        spans += [html.Span(top_artists.index[-1], className=highlight_class)]
+        spans += [html.Span('.')]
+
     if len(top_artists['PlayCount']) > 1:
         overall_percent_top_2 = int(round(top_artists['PlayCount'].iloc[-2] / top_artists.sum().PlayCount * 100))
-        intro_text += " Another {}% were by {}".format(overall_percent_top_2, top_artists.index[-2])
+        spans += [html.Span(' Another ')]
+        spans += [html.Span(f'{overall_percent_top_2}%', className=highlight_class)]
+        spans += [html.Span(' were by ')]
+        spans += [html.Span(top_artists.index[-2], className=highlight_class)]
+        spans += [html.Span('.')]
 
-        if len(top_artists['PlayCount']) > 2:
-            overall_percent_top_3 = int(round(top_artists['PlayCount'].iloc[-3] / top_artists.sum().PlayCount * 100))
-            intro_text += ", and {}% were by {}.".format(overall_percent_top_3, top_artists.index[-3])
-        else:
-            intro_text += "."
-    return intro_text
+    if len(top_artists['PlayCount']) > 2:
+        overall_percent_top_3 = int(round(top_artists['PlayCount'].iloc[-3] / top_artists.sum().PlayCount * 100))
+        spans += [html.Span(' Further ')]
+        spans += [html.Span(f'{overall_percent_top_3}%', className=highlight_class)]
+        spans += [html.Span(' were by ')]
+        spans += [html.Span(top_artists.index[-3], className=highlight_class)]
+        spans += [html.Span('.')]
+
+    return spans
 
 
 if __name__ == '__main__':

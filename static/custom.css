@@ -24,6 +24,12 @@ h6{ font-size: 1.75rem; }
 .inverted-text{
     color: #fff;
 }
+.inverted-highlighted-text{
+    color: #fff
+}
+.highlighted-text{
+    color: #333;
+}
 .shadow-text{
     text-shadow: 0 0 5px #3339;
 }
@@ -40,19 +46,26 @@ h6{ font-size: 1.75rem; }
 .palette-1{
     background-color: #bbb;
 }
-.palette-4{
-    background-image: url('/static/img/photo-1487180144351-b8472da7d491.jpg');
-    color: #fff;
-}
-.palette-3{
-    background-color: #bbb
-}
 .palette-2{
     background-image: url('/static/img/photo-1517260286907-f7d84f1f9ba4.jpg');
     color: #fff;
 }
+.palette-3{
+    background-color: #ccc
+}
+.palette-4{
+    background-color: #ddd;
+}
+.palette-5{
+    background-image: url('/static/img/photo-1487180144351-b8472da7d491.jpg');
+    color: #fff;
+}
 .modebar, ._dash-undo-redo{
     display: none !important;
+}
+.valign{
+    margin-top: auto;
+    margin-bottom: auto;
 }
 .pad{
     padding: 10% 0 5% 0;
