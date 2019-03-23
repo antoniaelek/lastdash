@@ -159,7 +159,7 @@ def update_output_div(input_value):
     # Top artists pie
     print("Top artists pie chart...")
     top_artists_pie_trace, top_artists_pie_layout = get_top_artists_plot(top_artists)
-    intro_text_div = html.Div(className='row palette palette-2', children=[
+    intro_text_div = html.Div(className='row palette palette-2 pad-sm-b', children=[
         html.Div(className='col-lg-2 col-md-2', children=[]),
         html.Div(className='col-lg-4 col-md-8', children=[
             dcc.Graph(figure={
@@ -172,7 +172,7 @@ def update_output_div(input_value):
         html.Div(className='col-lg-4 col-md-8 col-sm-12 centerflex', children=[
             html.H6(children=top_artists_intro_text(intro, top_artists, 'inverted-highlighted-text'), className='inverted-text')
         ]),
-        html.Div(className='d-lg-none col-md-2 pad-sm', children=[]),
+        #html.Div(className='d-lg-none col-md-2 pad-sm', children=[]),
     ])
 
     # By hour data

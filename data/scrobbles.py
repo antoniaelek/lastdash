@@ -6,10 +6,10 @@ def get_scrobbles_by_hour(scrobbles):
 
 
 def get_scrobbles(filename="csv/scrobbles.csv"):
-    return _get_logs(filename=filename, fields=['Timestamp', 'Track', 'Artist', 'Album', 'URL'], header=None, sep='\t')
+    return _get_activity(filename=filename, fields=['Timestamp', 'Track', 'Artist', 'Album', 'URL', 'ImageURL'], header=None, sep='\t')
 
 
-def _get_logs(filename, fields, header, sep):
+def _get_activity(filename, fields, header, sep):
     # Read csv
     entries = pd.read_csv(filename, names=fields, header=header, sep=sep)
 
