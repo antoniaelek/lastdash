@@ -231,7 +231,7 @@ def update_output_div(input_value):
     print("Fetching top tags...")
     top_tags_data = get_tags(scrobbles_selected)
     top_tags_trace, top_tags_layout = top_tags_plot(top_tags_data)
-    top_tags_div = html.Div(className='row palette palette-4 pad-sm-b', children=[
+    top_tags_div = html.Div(className='row palette palette-4 pad-sm-b inverted-text', children=[
         html.Div(className='col-lg-2 col-md-12', children=[]),
         html.Div(className='col-lg-4 col-md-12', children=[
             dcc.Graph(figure={
@@ -270,7 +270,7 @@ def top_tags_text(data, highlight_class):
 
 
 def get_tags_by_percent(data, percent):
-    max_data = data[data['Percent'] == percent]
+    max_data = data[data['Percent'] == percent].head(8)
     if len(max_data) == 0:
         return None
 

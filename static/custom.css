@@ -46,7 +46,7 @@ h6{ font-size: 1.75rem; }
 .palette-1{
     background-color: #bbb;
 }
-.palette-2{
+.palette-5{
     background-image: url('/static/img/photo-1517260286907-f7d84f1f9ba4.jpg');
     color: #fff;
 }
@@ -56,7 +56,7 @@ h6{ font-size: 1.75rem; }
 .palette-4{
     background-color: #ddd;
 }
-.palette-5{
+.palette-2{
     background-image: url('/static/img/photo-1487180144351-b8472da7d491.jpg');
     color: #fff;
 }

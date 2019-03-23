@@ -13,7 +13,7 @@ def _get_top_tags_for_plot(tags, top_n=8):
     return top_tags
 
 
-def top_tags_plot(tags, top_n=8, color='#000', width=1, font_family='Arial'):
+def top_tags_plot(tags, top_n=8, color='#333', width=1, font_family='Arial'):
     top_tags = _get_top_tags_for_plot(tags=tags, top_n=top_n)
     data = go.Scatterpolar(
       r=top_tags['Score'],
@@ -40,7 +40,8 @@ def top_tags_plot(tags, top_n=8, color='#000', width=1, font_family='Arial'):
             bgcolor='rgba(0,0,0,0)'
         ),
         font=dict(
-            family=font_family
+            family=font_family,
+            color=color,
         ),
         showlegend=False,
         paper_bgcolor='rgba(0,0,0,0)',
