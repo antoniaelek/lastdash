@@ -87,7 +87,8 @@ artists = get_artists()
 today = datetime.date.today()
 min_date = scrobbles.index.min()[0]
 max_date = today
-periods = list(range(min_date.year, max_date.year))
+periods = ['Overall']
+periods += list(range(min_date.year, max_date.year))
 periods += ['This year', 'This month', 'This week']
 periods.reverse()
 
@@ -140,6 +141,9 @@ def update_output_div(input_value):
         intro = input_value
     elif input_value == 'This year':
         scrobbles_selected = scrobbles[scrobbles['Year'] == int(today.year)]
+        intro = input_value
+    elif input_value == 'Overall':
+        scrobbles_selected = scrobbles
         intro = input_value
     else:
         scrobbles_selected = scrobbles[scrobbles['Year'] == int(input_value)]
@@ -199,8 +203,7 @@ def update_output_div(input_value):
     # By hour graph
     by_hour_trace, by_hour_layout = get_plays_by_hour(by_hour_data, color='#333')
     by_hour_div = html.Div(className='row palette palette-3', children=[
-        html.Div(className='col-lg-1', children=[]),
-        html.Div(className='col-lg-10 col-md-12', children=[
+        html.Div(className='col-lg-12 col-md-12', children=[
             dcc.Graph(figure={
                 'data': by_hour_trace,
                 'layout': by_hour_layout
@@ -209,20 +212,21 @@ def update_output_div(input_value):
     ])
 
     # Total scrobbles
+    morning_label = str(morning) if morning < 1000 else str(round(float(morning/1000),1)) + 'k'
+    afternoon_label = str(afternoon) if afternoon < 1000 else str(round(float(afternoon/1000),1)) + 'k'
+    night_label = str(night) if night < 1000 else str(round(float(night/1000),1)) + 'k'
+
     total_scrobbles_text_div = html.Div(className='row palette palette-3 pad-sm-b', children=[
-        html.Div(className='col-md-2', children=[]),
-        html.Div(className='col-md-2', children=[
-            html.H1(str(morning)),
+        html.Div(className='col-md-4', children=[
+            html.H1(morning_label),
             html.H6("Morning scrobbles")
         ]),
-        html.Div(className='col-md-1', children=[]),
-        html.Div(className='col-md-2', children=[
-            html.H1(str(afternoon)),
+        html.Div(className='col-md-4', children=[
+            html.H1(afternoon_label),
             html.H6("Afternoon scrobbles")
         ]),
-        html.Div(className='col-md-1', children=[]),
-        html.Div(className='col-md-2', children=[
-            html.H1(str(night)),
+        html.Div(className='col-md-4', children=[
+            html.H1(night_label),
             html.H6("Night scrobbles")
         ])
     ])
@@ -345,4 +349,4 @@ def top_artists_intro_text(period, top_artists, highlight_class):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
