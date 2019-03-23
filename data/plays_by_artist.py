@@ -1,15 +1,3 @@
-import datetime
-
-
-def get_artists_plays_by_date(scrobbles):
-    return (scrobbles[['PlayCount']]
-            .groupby(['Date', 'Artist'])
-            .sum()
-            .reset_index()
-            .sort_values(['Date', 'PlayCount'], ascending=False)
-            .set_index('Date'))
-
-
 def get_artists_plays_data(scrobbles, artists, top_n=8):
     if len(scrobbles) == 0:
         ret = get_artists_plays(scrobbles)
@@ -33,6 +21,15 @@ def get_artists_plays(scrobbles):
                                .groupby('Artist')
                                .sum()
                                .sort_values('PlayCount', ascending=False))
+
+
+def get_artists_plays_by_date(scrobbles):
+    return (scrobbles[['PlayCount']]
+            .groupby(['Date', 'Artist'])
+            .sum()
+            .reset_index()
+            .sort_values(['Date', 'PlayCount'], ascending=False)
+            .set_index('Date'))
 
 
 def merge_artists_plays(scrobbles, summed, artists, top_n=8):

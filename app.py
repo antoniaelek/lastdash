@@ -8,6 +8,7 @@ from dash.dependencies import Input, Output
 
 from data.plays_by_hour import get_plays_by_hour_data
 from data.plays_by_tag import get_tags
+from data.plays_by_track import get_tracks_plays_data
 from data.scrobbles import get_scrobbles
 from data.artists import get_artists
 from data.plays_by_artist import get_artists_plays_data
@@ -18,7 +19,7 @@ from plots.plays_by_tag import top_tags_plot
 import pandas as pd
 
 
-def top_artist_div(title, data, id, align_left=True):
+def single_top_div(title, data, id, align_left=True):
     img_class = 'col-lg-6 col-md-12 justify-content-lg-end justify-content-center d-flex'  # right-tab behind'
     div_text_large_class = 'd-none d-lg-block col-lg-6 justify-content-lg-end text-left'  # left-tab in-front'
     if align_left is False:
@@ -154,7 +155,7 @@ def update_output_div(input_value):
     # Top artist
     print("Filtering top artists...")
     top_artists = get_artists_plays_data(scrobbles_selected, artists, top_n=500)
-    top_artists_div = top_artist_div("Your top artist", top_artists, "total")
+    top_artists_div = single_top_div("Your top artist", top_artists, "total-artist")
 
     # Top artists pie
     print("Top artists pie chart...")
@@ -171,9 +172,13 @@ def update_output_div(input_value):
         html.Div(className='col-md-2 d-lg-none', children=[]),
         html.Div(className='col-lg-4 col-md-8 col-sm-12 centerflex', children=[
             html.H6(children=top_artists_intro_text(intro, top_artists, 'inverted-highlighted-text'), className='inverted-text')
-        ]),
-        #html.Div(className='d-lg-none col-md-2 pad-sm', children=[]),
+        ])
     ])
+
+    # Top track
+    print("Filtering top tracks...")
+    top_tracks = get_tracks_plays_data(scrobbles_selected, top_n=500)
+    top_tracks_div = single_top_div("Your top track", top_tracks, "total-track", align_left=False)
 
     # By hour data
     print("Grouping listening data by hour...")
@@ -239,7 +244,7 @@ def update_output_div(input_value):
         ])
     ])
 
-    return [top_artists_div, intro_text_div, by_hour_text_div, by_hour_div, total_scrobbles_text_div, top_tags_div]
+    return [top_artists_div, intro_text_div, top_tracks_div, by_hour_text_div, by_hour_div, total_scrobbles_text_div, top_tags_div]
 
 
 def top_tags_text(data, highlight_class):
