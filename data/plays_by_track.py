@@ -6,9 +6,8 @@ def get_tracks_plays(scrobbles):
     if len(scrobbles) == 0:
         return get_tracks_plays_by_date(scrobbles).reset_index().groupby('Track').sum()
 
-    track_play_counts = get_tracks_plays_by_date(scrobbles)
-    return (track_play_counts.reset_index()
-                             .groupby(['Track','URL','ImageURL'])
+    track_play_counts = get_tracks_plays_by_date(scrobbles).reset_index()[['Track','URL','ImageURL','PlayCount']]
+    return (track_play_counts.groupby(['Track','URL','ImageURL'])
                              .sum()
                              .sort_values('PlayCount', ascending=False)
                              .reset_index()

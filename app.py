@@ -42,13 +42,13 @@ def single_top_div(title, data, id, align_left=True):
 
     if len(data) > 0:
         div_img = html.Div(className=img_class, children=[
-            html.Img(className='gridbox', src=data.at[data.index[-1], 'ImageURL'].replace('300x300', '450x450'))
+            html.Img(className='gridbox', src=data.iloc[-1].ImageURL.replace('300x300', '450x450'))
         ])
 
         div_text_large = html.Div(className=div_text_large_class, children=[
             html.H4(title, className='textbox'),
             html.H2(data.index[-1], className=''),
-            html.H4('{} plays'.format(data.at[data.index[-1], 'PlayCount']), className="")
+            html.H4('{} plays'.format(data.iloc[-1].PlayCount), className="")
         ])
         div_text_small = html.Div(className='d-lg-none col-md-12 pad-bottom', children=[
             html.H3(data.index[-1], className=''),
