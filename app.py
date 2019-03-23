@@ -52,7 +52,7 @@ def single_top_div(title, data, id, align_left=True):
         ])
         div_text_small = html.Div(className='d-lg-none col-md-12 pad-bottom', children=[
             html.H3(data.index[-1], className=''),
-            html.H4('{} plays'.format(data.at[data.index[-1], 'PlayCount']), className="")
+            html.H4('{} plays'.format(data.iloc[-1].PlayCount), className="")
         ])
 
     if align_left:
@@ -161,8 +161,8 @@ def update_output_div(input_value):
     print("Top artists pie chart...")
     top_artists_pie_trace, top_artists_pie_layout = get_top_artists_plot(top_artists)
     intro_text_div = html.Div(className='row palette palette-2 pad-sm-b', children=[
-        html.Div(className='col-lg-2 col-md-2', children=[]),
-        html.Div(className='col-lg-4 col-md-8', children=[
+        html.Div(className='col-lg-1 col-md-2', children=[]),
+        html.Div(className='col-lg-5 col-md-8', children=[
             dcc.Graph(figure={
                 'data': top_artists_pie_trace,
                 'layout': top_artists_pie_layout
@@ -170,7 +170,7 @@ def update_output_div(input_value):
         ]),
         html.Div(className='col-sm-2 d-lg-none', children=[]),
         html.Div(className='col-md-2 d-lg-none', children=[]),
-        html.Div(className='col-lg-4 col-md-8 col-sm-12 centerflex', children=[
+        html.Div(className='col-lg-5 col-md-8 col-sm-12 centerflex', children=[
             html.H6(children=top_artists_intro_text(intro, top_artists, 'inverted-highlighted-text'), className='inverted-text')
         ])
     ])
@@ -232,14 +232,14 @@ def update_output_div(input_value):
     top_tags_data = get_tags(scrobbles_selected)
     top_tags_trace, top_tags_layout = top_tags_plot(top_tags_data)
     top_tags_div = html.Div(className='row palette palette-4 pad-sm-b inverted-text', children=[
-        html.Div(className='col-lg-2 col-md-12', children=[]),
-        html.Div(className='col-lg-4 col-md-12', children=[
+        html.Div(className='col-lg-1 col-md-12', children=[]),
+        html.Div(className='col-lg-5 col-md-12', children=[
             dcc.Graph(figure={
                 'data': top_tags_trace,
                 'layout': top_tags_layout
             })
         ]),
-        html.Div(className='col-lg-4 col-md-12 valign', children=[
+        html.Div(className='col-lg-5 col-md-12 valign', children=[
             html.H6(children=top_tags_text(top_tags_data, 'highlighted-text'))
         ])
     ])
@@ -249,23 +249,38 @@ def update_output_div(input_value):
 
 def top_tags_text(data, highlight_class):
     percents = data['Percent'].unique()
+    percents_pretty = data['PercentPretty'].unique()
     spans = []
     if len(percents) > 0:
         top_tags = get_tags_by_percent(data, percents[0])
-        if len(top_tags) > 1:
-            spans += [html.Span('Your top tags were: ')]
-            for tag in top_tags[:-1]:
-                spans += [html.Span(tag, className=highlight_class)]
-                spans += [html.Span(', ')]
-            spans += [html.Span(" and ")]
-            spans += [html.Span(top_tags[-1], className=highlight_class)]
-        else:
-            spans += [html.Span('Tour top tag was: ')]
-            spans += [html.Span(top_tags[0], className=highlight_class)]
+        spans += tag_spans(percents_pretty[0], highlight_class, top_tags, 'Your top tag was', 'Your top tags were')
 
-        spans += [html.Span(', which appeared in ')]
-        spans += [html.Span(data.iloc[0].PercentPretty, className=highlight_class)]
-        spans += [html.Span(' of your scrobbles.')]
+    if len(percents) > 1:
+        spans += [html.Span(" ")]
+        top_tags_2 = get_tags_by_percent(data, percents[1])
+        spans += tag_spans(percents_pretty[1], highlight_class, top_tags_2, 'Next was', 'Next were')
+
+    return spans
+
+
+def tag_spans(percent_pretty, highlight_class, top_tags, intro_singular, intro_plural):
+    intro_singular = intro_singular if intro_singular[-1] == ' ' else intro_singular + ' '
+    intro_plural = intro_plural if intro_plural[-1] == ' ' else intro_plural + ' '
+    spans = []
+    if len(top_tags) > 1:
+        spans += [html.Span(intro_plural)]
+        for tag in top_tags[:-1]:
+            spans += [html.Span(tag, className=highlight_class)]
+            spans += [html.Span(', ')]
+        spans = spans[:-1]
+        spans += [html.Span(" and ")]
+        spans += [html.Span(top_tags[-1], className=highlight_class)]
+    else:
+        spans += [html.Span(intro_singular)]
+        spans += [html.Span(top_tags[0], className=highlight_class)]
+    spans += [html.Span(', which appeared in ')]
+    spans += [html.Span(percent_pretty, className=highlight_class)]
+    spans += [html.Span(' of your scrobbles.')]
     return spans
 
 
